@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["queer_bristol"]
+
+[project]
+name = "queer-bristol"
+version = "0.1.0"
+dependencies = [
+    "Flask ~= 3.1.0",
+    "Flask-SQLAlchemy ~= 3.1.1",
+    "Flask-Migrate ~= 4.1.0",
+    "Flask-WTF ~= 1.2.2",
+    "psycopg2 ~= 2.9.10",
+    "Flask-Session ~= 0.8.0",
+]

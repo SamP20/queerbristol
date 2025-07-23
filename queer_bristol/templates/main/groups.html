@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Groups{% endblock %}
+
+{% block contents %}
+<div class="container">
+    <ul class="list-box">
+        {% for group in groups %}
+        <li>
+            <h2><a href="{{ url_for('main.group', group=group.slug)}}">{{ group.name }}</a></h2>
+            <p>{{ group.description }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
