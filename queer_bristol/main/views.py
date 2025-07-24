@@ -1,5 +1,5 @@
 
-from flask import Blueprint, render_template, abort
+from flask import Blueprint, render_template, abort, request
 
 from queer_bristol.extensions import db
 import sqlalchemy as sa
@@ -14,7 +14,21 @@ def index():
 
 @bp.route("/groups")
 def groups():
-    query = sa.select(Group).order_by(Group.name)
+    search = request.args.get('search')
+
+    if search:
+        tsquery = sa.func.plainto_tsquery(sa.literal('english'), search)
+        tsrank = sa.func.ts_rank(Group.search_vector, tsquery, 0).label('rank_tags')
+        query = sa.select(
+            Group,
+            tsrank
+        )
+        
+        query = query.filter(Group.search_vector.op('@@')(tsquery))
+        query = query.order_by(tsrank.desc())
+    else:
+        query = sa.select(Group).order_by(Group.name)
+
     groups = db.paginate(query)
     return render_template("main/groups.html", groups=groups)
 
@@ -29,6 +43,7 @@ def group(group):
 
 @bp.route("/events")
 def events():
+    query = sa.select(Event).order_by(Event.start).filter(Event.start)
     return render_template("main/events.html")
 
 @bp.route("/contact")

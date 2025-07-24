@@ -235,21 +235,36 @@ textarea {
     display: flex;
     flex-direction: column;
     row-gap: 1.0rem;
+    padding: 0;
 }
 
-.list-box li {
+.list-box > li {
     list-style: none;
     padding: 0.5rem;
 }
 
-.list-box li:nth-child(3n) {
+.list-box > li:nth-child(3n) {
     background-color: #b5e2ec;
 }
 
-.list-box li:nth-child(3n+1) {
+.list-box > li:nth-child(3n+1) {
     background-color: #ece7b5;
 }
 
-.list-box li:nth-child(3n+2) {
+.list-box > li:nth-child(3n+2) {
     background-color: #b5e2ec;
+}
+
+.tag-list {
+    display: flex;
+    flex-flow: row wrap;
+    column-gap: 1.0rem;
+    padding: 0;
+}
+
+.tag-list > li {
+    list-style: none;
+    padding: 0.5rem;
+    background-color: #f289ee;
+    border-radius: 0.5rem;
 }
