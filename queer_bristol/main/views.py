@@ -1,4 +1,5 @@
 
+from datetime import datetime, timedelta, timezone
 from flask import Blueprint, render_template, abort, request
 
 from queer_bristol.extensions import db
@@ -43,8 +44,18 @@ def group(group):
 
 @bp.route("/events")
 def events():
-    query = sa.select(Event).order_by(Event.start).filter(Event.start)
-    return render_template("main/events.html")
+    now = datetime.now(timezone.utc)
+    start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    late_previous_day = start_of_day - timedelta(hours=3)
+    query = sa.select(Event).order_by(Event.start).filter(Event.start>late_previous_day)
+
+    events = db.paginate(query)
+    return render_template("main/events.html", events=events)
+
+@bp.route("/event/<int:event_id>")
+def event(event_id):
+    event = db.get_or_404(Event, event_id)
+    return render_template("main/event.html", event=event)
 
 @bp.route("/contact")
 def contact():

@@ -4,5 +4,13 @@
 
 {% block contents %}
 <div class="container">
+    <ul class="list-box">
+        {% for event in events %}
+        <li>
+            <h2><a href="{{ url_for('main.event', event_id=event.id)}}">{{ event.title }}</a></h2>
+            <p>{{ event.description | truncate(150,true) }}</p>
+        </li>
+        {% endfor %}
+    </ul>
 </div>
 {% endblock %}

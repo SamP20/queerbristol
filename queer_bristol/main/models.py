@@ -32,8 +32,6 @@ class Group(PkModel):
     )
 
 
-
-
 class Event(PkModel):
     title: Mapped[str]
     description: Mapped[str]
