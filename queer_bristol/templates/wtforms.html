@@ -1,7 +1,11 @@
 
 {% macro input_box(field, form) -%}
 <div class="form-field">
+    {% if field.flags.required %}
+    {{ field.label(class="form-label required") }}
+    {% else %}
     {{ field.label(class="form-label") }}
+    {% endif %}
 
 {% if field.errors %}
 {{ field(class="form-control is-invalid", **kwargs) }}
@@ -21,7 +25,11 @@
 {% else %}
 {{ field(class="form-check-control", **kwargs) }}
 {% endif %}
+{% if field.flags.required %}
+{{ field.label(class="form-check-label required") }}
+{% else %}
 {{ field.label(class="form-check-label") }}
+{% endif %}
 {% for error in field.errors %}
     <p class="invalid-feedback">{{ error }}</p>
 {% endfor %}

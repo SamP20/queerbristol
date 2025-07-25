@@ -1,9 +1,12 @@
 
 from datetime import datetime, timedelta, timezone
-from flask import Blueprint, render_template, abort, request
+import pytz
+from flask import Blueprint, render_template, abort, request, redirect, url_for
+import sqlalchemy as sa
 
 from queer_bristol.extensions import db
-import sqlalchemy as sa
+
+from .forms import NewEventForm
 from .models import Group, Event
 
 bp = Blueprint("main", __name__)
@@ -56,6 +59,43 @@ def events():
 def event(event_id):
     event = db.get_or_404(Event, event_id)
     return render_template("main/event.html", event=event)
+
+@bp.route("/event/new", methods=["GET", "POST"])
+def event_new():
+    available_groups=db.session.execute(sa.Select(Group)).scalars()
+
+    form = NewEventForm()
+    group_list = [(g.id, g.name) for g in available_groups]
+    form.group.choices = group_list
+
+    if form.validate_on_submit():
+        start_datetime = datetime.combine(
+            form.start_date.data,
+            form.start_time.data,
+            pytz.timezone('Europe/London')
+        )
+
+        end_datetime = None
+        if form.end_time.data:
+            end_date = form.end_date.data or form.start_date.data
+            end_datetime = datetime.combine(
+                end_date,
+                form.end_time.data,
+                pytz.timezone('Europe/London')
+            )
+        event = Event(
+            title=form.title.data,
+            description=form.description.data,
+            start=start_datetime,
+            end=end_datetime,
+            venue=form.venue.data,
+            group_id=form.group.data
+        )
+        db.session.add(event)
+        db.session.commit()
+        return redirect(url_for('main.event', event_id=event.id))
+
+    return render_template("main/event_new.html", form=form)
 
 @bp.route("/contact")
 def contact():

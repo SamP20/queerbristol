@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% import 'wtforms.html' as wtf %}
+
+{% block title %}New event{% endblock %}
+
+{% block contents %}
+<div class="container">
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        {{ wtf.input(form.title, form) }}
+        {{ wtf.input(form.description, form) }}
+        {{ wtf.input(form.start_date, form) }}
+        {{ wtf.input(form.start_time, form) }}
+        {{ wtf.input(form.end_date, form) }}
+        {{ wtf.input(form.end_time, form) }}
+        {{ wtf.input(form.venue, form) }}
+        {{ wtf.input(form.group, form) }}
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+{% endblock %}

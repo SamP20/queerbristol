@@ -268,3 +268,8 @@ textarea {
     background-color: #f289ee;
     border-radius: 0.5rem;
 }
+
+.required:after {
+    content: '*';
+    color: red;
+}
