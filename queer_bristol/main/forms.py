@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, DateField, TimeField, SelectField
+from wtforms import EmailField, StringField, TextAreaField, DateField, TimeField, SelectField
 from wtforms.validators import DataRequired, InputRequired, Optional
 
 class MyForm(FlaskForm):
@@ -14,3 +14,7 @@ class NewEventForm(FlaskForm):
     end_time = TimeField('End time', validators=[Optional()])
     venue = StringField('Venue', validators=[DataRequired()])
     group = SelectField('Group', coerce=int)
+
+
+class LoginForm(FlaskForm):
+    email = EmailField('Email', validators=[DataRequired()])

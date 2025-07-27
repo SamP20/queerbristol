@@ -49,5 +49,5 @@ class PkModel(Model):
     """Base model with a primary key column named ``id``."""
     __abstract__ = True
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, sort_order=-1)
 

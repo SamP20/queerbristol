@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% import 'wtforms.html' as wtf %}
+
+{% block title %}Login{% endblock %}
+
+{% block contents %}
+<div class="container">
+{% if login %}
+    <h1>Hi {{ login.user.name }}</h1>
+    {% if needs_confirmation %}
+    <p>Please click the following button to login:</p>
+    <form method="POST" action="">
+        <button type="submit" class="btn btn-primary">Login now</button>
+    </form>
+    {% else %}
+    <p>Login success. You can now close this page.</p>
+    {% endif %}
+{% else %}
+    <p>Login expired or invalid.</p>
+{% endif %}
+</div>
+{% endblock %}

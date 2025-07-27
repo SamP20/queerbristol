@@ -36,15 +36,16 @@ def create_app(test_config=None):
 
 def register_extensions(app: Flask):
     from .extensions import db, migrate
-    from flask_session.sqlalchemy import SqlAlchemySessionInterface
+    from . import login
     db.init_app(app)
     migrate.init_app(app)
-    app.session_interface = SqlAlchemySessionInterface(app, db)
+    login.init_app(app)
 
 
 def register_blueprints(app: Flask):
-    from queer_bristol import main
+    from queer_bristol import main, account
     app.register_blueprint(main.views.bp)
+    app.register_blueprint(account.views.bp)
 
 def configure_logger(app):
     """Configure loggers."""

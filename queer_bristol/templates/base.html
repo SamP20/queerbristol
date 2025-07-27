@@ -29,6 +29,9 @@
                     <li><a href="{{ url_for('main.groups') }}" class="nav-link">Groups</a></li>
                     <li><a href="{{ url_for('main.events') }}" class="nav-link">Events</a></li>
                     <li><a href="{{ url_for('main.contact') }}" class="nav-link">Contact</a></li>
+                    {% if g.user %}
+                    <li><a href="{{ url_for('account.logout') }}" class="nav-link">Logout</a></li>
+                    {% endif %}
                 </ul>
             </nav>
         </header>

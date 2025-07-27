@@ -8,6 +8,14 @@ from sqlalchemy.sql import func
 
 
 from queer_bristol.database import PkModel, UTCDateTime
+from queer_bristol.extensions import db
+
+
+# class RateLimit():
+#     key: Mapped[str] = mapped_column(primary_key=True)
+#     limit: Mapped[int]
+#     count: Mapped[int]
+#     expire: Mapped[datetime.datetime] = mapped_column(UTCDateTime)
 
 
 class Group(PkModel):
@@ -42,3 +50,28 @@ class Event(PkModel):
 
 
     group: Mapped[Optional["Group"]] = relationship()
+
+
+class User(PkModel):
+    email: Mapped[str] = mapped_column(index=True, unique=True)
+    name: Mapped[str]
+
+
+class Session(db.Model):
+    id: Mapped[str] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id", onupdate="CASCADE", ondelete="CASCADE"))
+    expires: Mapped[datetime.datetime] = mapped_column(UTCDateTime)
+
+    user: Mapped["User"] = relationship()
+
+
+class EmailLogin(db.Model):
+    id: Mapped[str] = mapped_column(primary_key=True)
+    user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("user.id", onupdate="CASCADE", ondelete="CASCADE"))
+    verify_key: Mapped[str]
+    visual_code: Mapped[str] # A code the user can visually check matches the one in the email
+
+    expiry: Mapped[datetime.datetime] = mapped_column(UTCDateTime)
+    verified: Mapped[bool]
+
+    user: Mapped[Optional["User"]] = relationship()

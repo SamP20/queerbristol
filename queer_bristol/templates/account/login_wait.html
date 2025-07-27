@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% import 'wtforms.html' as wtf %}
+
+{% block title %}Login{% endblock %}
+
+{% block contents %}
+<div class="container">
+    <p>Please check your email. The code should match the following {{ login.visual_code }}</p>
+    <p>The email will have contained the following <a href="{{ verify_url }}">verify url</a>.</p>
+</div>
+
+<script>
+    function login_poll() {
+        setTimeout(() => {
+            fetch("{{ login_poll_url }}")
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data["verified"] === true) {
+                        console.log("Login is now verified! Redirecting...");
+                        window.location.replace("{{ login_redirect }}");
+                    } else {
+                        console.log("Login not yet verified");
+                        login_poll();
+                    }
+                })
+                .catch((err) => {
+                    login_poll();
+                })
+        }, 5000);
+    }
+
+    window.onload = login_poll;
+</script>
+{% endblock %}

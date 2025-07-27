@@ -1,13 +1,16 @@
 
 from datetime import datetime, timedelta, timezone
+import secrets
 import pytz
-from flask import Blueprint, render_template, abort, request, redirect, url_for
+from flask import Blueprint, make_response, render_template, abort, request, redirect, url_for
 import sqlalchemy as sa
 
 from queer_bristol.extensions import db
+from queer_bristol.login import login_required
+from queer_bristol.token import generate_token, token_to_id
 
-from .forms import NewEventForm
-from .models import Group, Event
+from .forms import LoginForm, NewEventForm
+from queer_bristol.models import EmailLogin, Group, Event, Session, User
 
 bp = Blueprint("main", __name__)
 
@@ -27,7 +30,7 @@ def groups():
             Group,
             tsrank
         )
-        
+
         query = query.filter(Group.search_vector.op('@@')(tsquery))
         query = query.order_by(tsrank.desc())
     else:
@@ -61,6 +64,7 @@ def event(event_id):
     return render_template("main/event.html", event=event)
 
 @bp.route("/event/new", methods=["GET", "POST"])
+@login_required
 def event_new():
     available_groups=db.session.execute(sa.Select(Group)).scalars()
 
