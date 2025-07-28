@@ -1,0 +1,7 @@
+Hi {{ login.user.name }}
+
+You (or someone else) has requested a login link. If this was you then click the link below to login:
+
+{{ verify_url }}
+
+If you did not try to login then you can safely ignore this email.

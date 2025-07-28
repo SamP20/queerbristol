@@ -14,5 +14,6 @@ dependencies = [
     "Flask-Migrate ~= 4.1.0",
     "Flask-WTF ~= 1.2.2",
     "psycopg2 ~= 2.9.10",
-    "pytz ~= 2025.2"
+    "pytz ~= 2025.2",
+    "mailersend ~= 0.6.0"
 ]

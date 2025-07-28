@@ -6,6 +6,7 @@ import sqlalchemy as sa
 
 from queer_bristol.extensions import db
 from queer_bristol.login import check_login_link, create_session_from_login
+from queer_bristol.mailer import Mailer
 from queer_bristol.token import generate_token, token_to_id
 
 from .forms import LoginForm
@@ -39,12 +40,14 @@ def login():
 
         verify_url = url_for('account.login_verify', _external=True, id=login_token, token=verify_token)
 
+        mailer = Mailer()
+        result = mailer.send_login_token(login, verify_url)
+
         login_redirect = session.get("return_url") or url_for('main.index')
 
         response = make_response(render_template(
             "account/login_wait.html",
             login=login,
-            verify_url=verify_url,
             login_poll_url=url_for('account.login_check'),
             login_redirect=login_redirect,
         ))
