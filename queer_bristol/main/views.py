@@ -10,7 +10,7 @@ from queer_bristol.login import login_required
 from queer_bristol.token import generate_token, token_to_id
 
 from .forms import LoginForm, NewEventForm
-from queer_bristol.models import EmailLogin, Group, Event, Session, User
+from queer_bristol.models import Announcement, EmailLogin, Group, Event, Session, User
 
 bp = Blueprint("main", __name__)
 
@@ -45,6 +45,10 @@ def group(group):
     group = db.session.execute(query).scalar_one_or_none()
     if group is None:
         abort(404)
+
+    query = sa.select(Announcement).filter(Announcement.group==group).order_by(Announcement.posted)
+
+    announcements = db.paginate(query)
 
     return render_template("main/group.html", group=group)
 

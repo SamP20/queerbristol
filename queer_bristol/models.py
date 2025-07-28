@@ -52,6 +52,16 @@ class Event(PkModel):
     group: Mapped[Optional["Group"]] = relationship()
 
 
+class Announcement(PkModel):
+    title: Mapped[str]
+    body: Mapped[str]
+    posted: Mapped[datetime.datetime] = mapped_column(UTCDateTime)
+    group_id: Mapped[int] = mapped_column(ForeignKey("group.id", onupdate="CASCADE", ondelete="CASCADE"))
+
+
+    group: Mapped[Optional["Group"]] = relationship()
+
+
 class User(PkModel):
     email: Mapped[str] = mapped_column(index=True, unique=True)
     name: Mapped[str]
