@@ -15,10 +15,10 @@
     </ul>
     <div class="pagination">
         {% if events.has_prev %}
-        <a href="{{ url_for('.events', page=events.prev_num, per_page=events.per_page)}}">&#171; Sooner</a>
+        <a href="{{ url_for('.events', page=events.prev_num, **paginate_passthrough)}}">&#171; Sooner</a>
         {% endif %}
         {% if events.has_next %}
-        <a href="{{ url_for('.events', page=events.next_num, per_page=events.per_page)}}">Later &#187;</a>
+        <a href="{{ url_for('.events', page=events.next_num, **paginate_passthrough)}}">Later &#187;</a>
         {% endif %}
     </div>
 </div>

@@ -20,6 +20,9 @@
     --border-radius: 0.4rem;
     --button-color: #dfdbd2;
     --button-hover-color: #c5c2ba;
+    --background-accent-1: #b5e2ec;
+    --background-accent-2: #ece7b5;
+    --background-accent-3: #ecb5e9;
 }
 
 @font-face {
@@ -244,15 +247,15 @@ textarea {
 }
 
 .list-box > li:nth-child(3n) {
-    background-color: #b5e2ec;
+    background-color: var( --background-accent-1);
 }
 
 .list-box > li:nth-child(3n+1) {
-    background-color: #ece7b5;
+    background-color: var( --background-accent-2);
 }
 
 .list-box > li:nth-child(3n+2) {
-    background-color: #b5e2ec;
+    background-color: var( --background-accent-3);
 }
 
 .tag-list {
@@ -272,4 +275,10 @@ textarea {
 .required:after {
     content: '*';
     color: red;
+}
+
+.accent-box {
+    width: 100%;
+    padding: 0.5rem;
+    background-color: var(--background-accent-3);
 }

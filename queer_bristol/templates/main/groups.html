@@ -12,5 +12,13 @@
         </li>
         {% endfor %}
     </ul>
+    <div class="pagination">
+        {% if groups.has_prev %}
+        <a href="{{ url_for('.groups', page=groups.prev_num, **paginate_passthrough)}}">&#171; Previous</a>
+        {% endif %}
+        {% if groups.has_next %}
+        <a href="{{ url_for('.groups', page=groups.next_num, **paginate_passthrough)}}">Next &#187;</a>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

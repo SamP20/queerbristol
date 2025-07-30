@@ -6,5 +6,34 @@
 <div class="container">
     <h1>{{ group.name }}</h1>
     <p>{{ group.description }}</p>
+    {% if next_event %}
+    <h2>Next event</h2>
+    <div class="accent-box">
+        <h3><a href="{{ url_for('main.event', event_id=next_event.id)}}">{{ next_event.title }}</a></h3>
+        <p>Location: {{ next_event.venue }}</p>
+        <p>{{ next_event.description | truncate(150,true) }}</p>
+    </div>
+    <p><a href="{{ url_for('main.events', group_id=group.id)}}">See all events from this group</a></p>
+    
+    <h2>Announcements</h2>
+    <ul class="list-box">
+    {% for announcement in announcements %}
+        <li>
+            <h3>{{ announcement.title }}</h3>
+            <p>Posted {{ announcement.posted | datetime_to_human }}</p>
+            <p>{{ announcement.body }}</p>
+        </li>
+    {% endfor %}
+    </ul>
+    <div class="pagination">
+        {% if announcements.has_prev %}
+        <a href="{{ url_for('.group', page=announcements.prev_num, **paginate_passthrough)}}">&#171; Sooner</a>
+        {% endif %}
+        {% if announcements.has_next %}
+        <a href="{{ url_for('.group', page=announcements.next_num, **paginate_passthrough)}}">Later &#187;</a>
+        {% endif %}
+    </div>
+    
+    {% endif %}
 </div>
 {% endblock %}

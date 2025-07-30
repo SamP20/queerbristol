@@ -4,7 +4,7 @@ from typing import Optional
 from sqlalchemy import Computed, ForeignKey, Index, String, literal, literal_column
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.sql import func
+from sqlalchemy.sql import func, expression
 
 
 from queer_bristol.database import PkModel, UTCDateTime
@@ -17,6 +17,11 @@ from queer_bristol.extensions import db
 #     count: Mapped[int]
 #     expire: Mapped[datetime.datetime] = mapped_column(UTCDateTime)
 
+class UserGroup(db.Model):
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id", onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
+    group_id: Mapped[int] =  mapped_column(ForeignKey("group.id", onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
+
+    group: Mapped["Group"] = relationship()
 
 class Group(PkModel):
     name: Mapped[str]
@@ -58,14 +63,24 @@ class Announcement(PkModel):
     posted: Mapped[datetime.datetime] = mapped_column(UTCDateTime)
     group_id: Mapped[int] = mapped_column(ForeignKey("group.id", onupdate="CASCADE", ondelete="CASCADE"))
 
-
     group: Mapped[Optional["Group"]] = relationship()
+
+    __table_args__ = (
+        Index(
+            'ix_announcement_posted',
+            posted,
+            postgresql_using='brin'
+        ),
+    )
 
 
 class User(PkModel):
     email: Mapped[str] = mapped_column(index=True, unique=True)
     name: Mapped[str]
+    admin: Mapped[bool] = mapped_column(server_default=expression.false())
+    helper: Mapped[bool] = mapped_column(server_default=expression.false())
 
+    groups: Mapped[list["Group"]] = relationship('Group', secondary=UserGroup.__table__, backref='user')
 
 class Session(db.Model):
     id: Mapped[str] = mapped_column(primary_key=True)
