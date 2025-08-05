@@ -9,11 +9,12 @@
     {% if next_event %}
     <h2>Next event</h2>
     <div class="accent-box">
-        <h3><a href="{{ url_for('main.event', event_id=next_event.id)}}">{{ next_event.title }}</a></h3>
+        <h3><a href="{{ url_for('events.event', event_id=next_event.id)}}">{{ next_event.title }}</a></h3>
         <p>Location: {{ next_event.venue }}</p>
         <p>{{ next_event.description | truncate(150,true) }}</p>
     </div>
-    <p><a href="{{ url_for('main.events', group_id=group.id)}}">See all events from this group</a></p>
+    <p><a href="{{ url_for('events.index', group_id=group.id)}}">See all events from this group</a></p>
+    {% endif %}
     
     <h2>Announcements</h2>
     <ul class="list-box">
@@ -33,7 +34,10 @@
         <a href="{{ url_for('.group', page=announcements.next_num, **paginate_passthrough)}}">Later &#187;</a>
         {% endif %}
     </div>
-    
+    {% if g.user and g.user.can_admin_group(group) %}
+    <h2>Admin</h2>
+    <p><a href="{{ url_for('.edit', group_id=group.id) }}">Edit group</a></p>
+    <p><a href="{{ url_for('events.new', group_id=group.id) }}">New event</a></p>
     {% endif %}
 </div>
 {% endblock %}

@@ -1,15 +1,15 @@
 
 from datetime import datetime, timedelta, timezone
+from functools import wraps
 import secrets
 from zoneinfo import ZoneInfo
-from flask import Blueprint, g, make_response, render_template, abort, request, redirect, url_for
+from flask import Blueprint, current_app, flash, g, make_response, render_template, abort, request, redirect, url_for
 import sqlalchemy as sa
 
 from queer_bristol.extensions import db
 from queer_bristol.login import login_required
 from queer_bristol.token import generate_token, token_to_id
 
-from .forms import LoginForm, NewEventForm
 from queer_bristol.models import Announcement, EmailLogin, Group, Event, Session, User
 
 bp = Blueprint("main", __name__)
@@ -18,9 +18,17 @@ bp = Blueprint("main", __name__)
 def filter_passthrough_request_args(passthrough: set[str]):
     return {k: v for k, v in request.args.items() if k in passthrough}
 
+def current_timezone():
+    zone = current_app.config.get("TIMEZONE", "Europe/London")
+    return ZoneInfo(zone)
+
+@bp.app_template_filter('localtime')
+def localtime(t: datetime):
+    return t.astimezone(current_timezone())
+
 @bp.app_template_filter('datetime_to_human')
 def datetime_to_human(t: datetime):
-    tz = ZoneInfo("Europe/London")
+    tz = current_timezone()
     t = t.astimezone(tz)
     fmt = '%-d %B %Y %H:%M %Z'
     return t.strftime(fmt)
@@ -30,118 +38,6 @@ def datetime_to_human(t: datetime):
 def index():
     return render_template("main/index.html")
 
-@bp.route("/groups")
-def groups():
-    search = request.args.get('search')
-
-    if search:
-        tsquery = sa.func.plainto_tsquery(sa.literal('english'), search)
-        tsrank = sa.func.ts_rank(Group.search_vector, tsquery, 0).label('rank_tags')
-        query = sa.select(
-            Group,
-            tsrank
-        )
-
-        query = query.filter(Group.search_vector.op('@@')(tsquery))
-        query = query.order_by(tsrank.desc())
-    else:
-        query = sa.select(Group).order_by(Group.name)
-
-    paginate_passthrough = filter_passthrough_request_args({"search", "per_page"})
-
-    groups = db.paginate(query)
-    return render_template("main/groups.html", groups=groups, paginate_passthrough=paginate_passthrough)
-
-@bp.route("/groups/<group>")
-def group(group):
-    query = sa.select(Group).filter(Group.slug==group)
-    group = db.session.execute(query).scalar_one_or_none()
-    if group is None:
-        abort(404)
-
-    query = sa.select(Announcement).filter(Announcement.group==group).order_by(Announcement.posted.desc())
-    announcements = db.paginate(query)
-
-    now = datetime.now(timezone.utc)
-    few_hours_ago = now - timedelta(hours=3)
-
-    query = sa.select(Event).filter(sa.and_(
-        Event.group==group,
-        Event.start<few_hours_ago
-    )).order_by(Event.start).limit(1)
-    next_event = db.session.execute(query).scalar_one_or_none()
-
-    paginate_passthrough = filter_passthrough_request_args({"search", "per_page"})
-
-    return render_template(
-        "main/group.html",
-        group=group,
-        announcements=announcements,
-        next_event=next_event,
-        paginate_passthrough=paginate_passthrough
-    )
-
-@bp.route("/events")
-def events():
-    now = datetime.now(timezone.utc)
-    start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    late_previous_day = start_of_day - timedelta(hours=3)
-    query = sa.select(Event).order_by(Event.start).filter(Event.start>late_previous_day)
-
-    group_id = request.args.get("group_id")
-    if group_id is not None:
-        query = query.filter(Event.group_id==group_id)
-
-    paginate_passthrough = filter_passthrough_request_args({"per_page", "group_id"})
-    events = db.paginate(query)
-    return render_template("main/events.html", events=events, paginate_passthrough=paginate_passthrough)
-
-@bp.route("/event/<int:event_id>")
-def event(event_id):
-    event = db.get_or_404(Event, event_id)
-    return render_template("main/event.html", event=event)
-
-@bp.route("/event/new", methods=["GET", "POST"])
-@login_required
-def event_new():
-    
-
-    form = NewEventForm()
-    if g.user.helper or g.user.admin:
-        available_groups = db.session.execute(sa.Select(Group)).scalars()
-    else:
-        available_groups = g.user.groups
-    group_list = [(g.id, g.name) for g in available_groups]
-    form.group.choices = group_list
-
-    if form.validate_on_submit():
-        start_datetime = datetime.combine(
-            form.start_date.data,
-            form.start_time.data,
-            pytz.timezone('Europe/London')
-        )
-
-        end_datetime = None
-        if form.end_time.data:
-            end_date = form.end_date.data or form.start_date.data
-            end_datetime = datetime.combine(
-                end_date,
-                form.end_time.data,
-                pytz.timezone('Europe/London')
-            )
-        event = Event(
-            title=form.title.data,
-            description=form.description.data,
-            start=start_datetime,
-            end=end_datetime,
-            venue=form.venue.data,
-            group_id=form.group.data
-        )
-        db.session.add(event)
-        db.session.commit()
-        return redirect(url_for('main.event', event_id=event.id))
-
-    return render_template("main/event_new.html", form=form)
 
 @bp.route("/contact")
 def contact():

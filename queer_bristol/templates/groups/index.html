@@ -7,7 +7,7 @@
     <ul class="list-box">
         {% for group in groups %}
         <li>
-            <h2><a href="{{ url_for('main.group', group=group.slug)}}">{{ group.name }}</a></h2>
+            <h2><a href="{{ url_for('.group', group_id=group.id)}}">{{ group.name }}</a></h2>
             <p>{{ group.description }}</p>
         </li>
         {% endfor %}

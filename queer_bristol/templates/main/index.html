@@ -5,5 +5,8 @@
 {% block contents %}
 <div class="container">
   <p>Homepage stuff about what this site is about.</p>
+  {% if g.user %}
+  <p>Hi, {{ g.user.name }}.</p>
+  {% endif %}
 </div>
 {% endblock %}

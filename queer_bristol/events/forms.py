@@ -1,11 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import EmailField, HiddenField, StringField, TextAreaField, DateField, TimeField, SelectField
+from wtforms import StringField, TextAreaField, DateField, TimeField, SelectField
 from wtforms.validators import DataRequired, InputRequired, Optional
 
-class MyForm(FlaskForm):
-    name = StringField('name', validators=[DataRequired()])
-
-class NewEventForm(FlaskForm):
+class EventForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     description = TextAreaField('Description')
     start_date = DateField('Start date', validators=[InputRequired()])
@@ -14,11 +11,3 @@ class NewEventForm(FlaskForm):
     end_time = TimeField('End time', validators=[Optional()])
     venue = StringField('Venue', validators=[DataRequired()])
     group = SelectField('Group', coerce=int)
-
-
-class DeleteConfirmForm(FlaskForm):
-    pass
-
-
-class LoginForm(FlaskForm):
-    email = EmailField('Email', validators=[DataRequired()])

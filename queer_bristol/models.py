@@ -3,6 +3,7 @@ import datetime
 from typing import Optional
 from sqlalchemy import Computed, ForeignKey, Index, String, literal, literal_column
 from sqlalchemy.dialects.postgresql import TSVECTOR
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func, expression
 
@@ -35,6 +36,10 @@ class Group(PkModel):
         .concat(func.setweight(func.to_tsvector(literal('english'), literal_column('description')), 'C')),
         persisted=True
     ))
+
+    @hybrid_property
+    def full_slug(self):
+        return self.slug + "-" + str(self.id)
 
     __table_args__ = (
         Index(
@@ -81,6 +86,13 @@ class User(PkModel):
     helper: Mapped[bool] = mapped_column(server_default=expression.false())
 
     groups: Mapped[list["Group"]] = relationship('Group', secondary=UserGroup.__table__, backref='user')
+
+    @hybrid_property
+    def is_helper(self):
+        return self.admin or self.helper
+    
+    def can_admin_group(self, group: Group):
+        return self.is_helper or group in self.groups
 
 class Session(db.Model):
     id: Mapped[str] = mapped_column(primary_key=True)

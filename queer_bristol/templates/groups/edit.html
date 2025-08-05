@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% import 'wtforms.html' as wtf %}
+
+{% block title %}New event{% endblock %}
+
+{% block contents %}
+<div class="container">
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        {{ wtf.input(form.name, form) }}
+        {{ wtf.input(form.description, form) }}
+        {{ wtf.input(form.tags, form) }}
+        <button type="submit" class="btn btn-primary">Submit</button><a href="{{ url_for('.group', group_id=group.id) }}">Cancel</a>
+    </form>
+</div>
+{% endblock %}
