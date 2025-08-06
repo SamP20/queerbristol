@@ -5,10 +5,9 @@ from datetime import datetime, timedelta, timezone
 from flask import Blueprint, abort, flash, g, redirect, render_template, request, url_for
 import sqlalchemy as sa
 
-from queer_bristol.main.forms import DeleteConfirmForm
-
 from .forms import EventForm
 from queer_bristol.extensions import db
+from queer_bristol.forms import DeleteConfirmForm
 from queer_bristol.login import login_required
 from queer_bristol.main.views import current_timezone
 from queer_bristol.models import Event, Group
