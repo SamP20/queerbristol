@@ -46,7 +46,7 @@ def group(group_id):
 
     query = sa.select(Event).filter(sa.and_(
         Event.group==group,
-        Event.start<few_hours_ago
+        Event.start>few_hours_ago
     )).order_by(Event.start).limit(1)
     next_event = db.session.execute(query).scalar_one_or_none()
 
