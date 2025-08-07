@@ -1,7 +1,7 @@
 
 import datetime
 from typing import Optional
-from sqlalchemy import Computed, ForeignKey, Index, String, literal, literal_column
+from sqlalchemy import Column, Computed, ForeignKey, Index, String, Table, literal, literal_column
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -18,16 +18,9 @@ from queer_bristol.extensions import db
 #     count: Mapped[int]
 #     expire: Mapped[datetime.datetime] = mapped_column(UTCDateTime)
 
-class UserGroup(db.Model):
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id", onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
-    group_id: Mapped[int] =  mapped_column(ForeignKey("group.id", onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
-
-    group: Mapped["Group"] = relationship()
-
 class Group(PkModel):
     name: Mapped[str]
     description: Mapped[str]
-    slug: Mapped[str] = mapped_column(index=True)
     tags: Mapped[str] = mapped_column(String, server_default="")
 
     search_vector: Mapped[str] = mapped_column(TSVECTOR, Computed(
@@ -78,6 +71,13 @@ class Announcement(PkModel):
         ),
     )
 
+user_group_association = Table(
+    "user_group",
+    db.Model.metadata,
+    Column("user_id", ForeignKey("user.id"), primary_key=True),
+    Column("group_id", ForeignKey("group.id"), primary_key=True)
+)
+
 
 class User(PkModel):
     email: Mapped[str] = mapped_column(index=True, unique=True)
@@ -85,7 +85,7 @@ class User(PkModel):
     admin: Mapped[bool] = mapped_column(server_default=expression.false())
     helper: Mapped[bool] = mapped_column(server_default=expression.false())
 
-    groups: Mapped[list["Group"]] = relationship('Group', secondary=UserGroup.__table__, backref='user')
+    groups: Mapped[list["Group"]] = relationship('Group', secondary=user_group_association)
 
     @hybrid_property
     def is_helper(self):
