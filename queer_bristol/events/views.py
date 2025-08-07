@@ -28,9 +28,9 @@ def index():
     if group_id is not None:
         query = query.filter(Event.group_id==group_id)
 
-    events = db.paginate(query)
+    events = db.paginate(query, per_page=10)
 
-    query_args = filter_request_args({"per_page", "group_id"})
+    query_args = filter_request_args({"group_id"})
 
     prev_url = url_for('.index', page=events.prev_num, **query_args) if events.has_prev else None
     next_url = url_for('.index', page=events.next_num, **query_args) if events.has_next else None
