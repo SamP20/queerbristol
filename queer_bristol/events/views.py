@@ -9,7 +9,7 @@ from .forms import EventForm
 from queer_bristol.extensions import db
 from queer_bristol.forms import DeleteConfirmForm
 from queer_bristol.login import login_required
-from queer_bristol.main.views import current_timezone
+from queer_bristol.time_helpers import current_timezone
 from queer_bristol.models import Event, Group
 
 bp = Blueprint("events", __name__, url_prefix="/events")

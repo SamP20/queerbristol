@@ -16,22 +16,6 @@ bp = Blueprint("main", __name__)
 def filter_passthrough_request_args(passthrough: set[str]):
     return {k: v for k, v in request.args.items() if k in passthrough}
 
-def current_timezone():
-    zone = current_app.config.get("TIMEZONE", "Europe/London")
-    return ZoneInfo(zone)
-
-@bp.app_template_filter('localtime')
-def localtime(t: datetime):
-    return t.astimezone(current_timezone())
-
-@bp.app_template_filter('datetime_to_human')
-def datetime_to_human(t: datetime):
-    tz = current_timezone()
-    t = t.astimezone(tz)
-    fmt = '%-d %B %Y %H:%M %Z'
-    return t.strftime(fmt)
-
-
 @bp.route("/")
 def index():
     return render_template("main/index.html")

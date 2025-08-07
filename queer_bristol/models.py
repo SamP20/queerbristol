@@ -10,6 +10,7 @@ from sqlalchemy.sql import func, expression
 
 from queer_bristol.database import PkModel
 from queer_bristol.extensions import db
+from queer_bristol.time_helpers import current_timezone
 
 
 # class RateLimit():
@@ -51,6 +52,17 @@ class Event(PkModel):
     venue: Mapped[str]
     group_id: Mapped[Optional[int]] = mapped_column(ForeignKey("group.id", onupdate="CASCADE", ondelete="CASCADE"))
 
+    @property
+    def start_localtime(self):
+        tz = current_timezone()
+        return self.start.astimezone(tz)
+    
+    @property
+    def end_localtime(self):
+        if self.end is None:
+            return None
+        tz = current_timezone()
+        return self.end.astimezone(tz)
 
     group: Mapped[Optional["Group"]] = relationship()
 

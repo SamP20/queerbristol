@@ -43,7 +43,7 @@ def register_extensions(app: Flask):
 
 
 def register_blueprints(app: Flask):
-    from queer_bristol import main, account, events, groups, demo_data
+    from queer_bristol import main, account, events, groups, demo_data, time_helpers
     app.register_blueprint(main.views.bp)
     app.register_blueprint(account.views.bp)
     app.register_blueprint(events.views.bp)
@@ -51,6 +51,7 @@ def register_blueprints(app: Flask):
     
     # This provides no pages, but some CLI commands
     app.register_blueprint(demo_data.bp)
+    app.register_blueprint(time_helpers.bp)
 
 def configure_logger(app):
     """Configure loggers."""
