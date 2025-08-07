@@ -6,26 +6,6 @@ from queer_bristol.extensions import db
 
 Model = db.Model
 
-class UTCDateTime(types.TypeDecorator):
-
-    impl = types.DateTime
-    cache_ok = True
-
-    def process_bind_param(self, value, engine):
-        if value is None:
-            return
-        if value.utcoffset() is None:
-            raise ValueError(
-                'Got naive datetime while timezone-aware is expected'
-            )
-        return value.astimezone(datetime.timezone.utc).replace(
-            tzinfo=None
-        )
-
-    def process_result_value(self, value, engine):
-        if value is not None:
-            return value.replace(tzinfo=datetime.timezone.utc)
-
 
 class SpaceSeparatedSet(types.TypeDecorator):
 

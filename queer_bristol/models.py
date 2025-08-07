@@ -1,14 +1,14 @@
 
 import datetime
 from typing import Optional
-from sqlalchemy import Column, Computed, ForeignKey, Index, String, Table, literal, literal_column
+from sqlalchemy import Column, Computed, DateTime, ForeignKey, Index, String, Table, literal, literal_column
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func, expression
 
 
-from queer_bristol.database import PkModel, UTCDateTime
+from queer_bristol.database import PkModel
 from queer_bristol.extensions import db
 
 
@@ -16,7 +16,7 @@ from queer_bristol.extensions import db
 #     key: Mapped[str] = mapped_column(primary_key=True)
 #     limit: Mapped[int]
 #     count: Mapped[int]
-#     expire: Mapped[datetime.datetime] = mapped_column(UTCDateTime)
+#     expire: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
 
 class Group(PkModel):
     name: Mapped[str]
@@ -46,8 +46,8 @@ class Group(PkModel):
 class Event(PkModel):
     title: Mapped[str]
     description: Mapped[str]
-    start: Mapped[datetime.datetime] = mapped_column(UTCDateTime)
-    end: Mapped[Optional[datetime.datetime]] = mapped_column(UTCDateTime)
+    start: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
+    end: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
     venue: Mapped[str]
     group_id: Mapped[Optional[int]] = mapped_column(ForeignKey("group.id", onupdate="CASCADE", ondelete="CASCADE"))
 
@@ -58,7 +58,7 @@ class Event(PkModel):
 class Announcement(PkModel):
     title: Mapped[str]
     body: Mapped[str]
-    posted: Mapped[datetime.datetime] = mapped_column(UTCDateTime)
+    posted: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
     group_id: Mapped[int] = mapped_column(ForeignKey("group.id", onupdate="CASCADE", ondelete="CASCADE"))
 
     group: Mapped[Optional["Group"]] = relationship()
@@ -97,7 +97,7 @@ class User(PkModel):
 class Session(db.Model):
     id: Mapped[str] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id", onupdate="CASCADE", ondelete="CASCADE"))
-    expires: Mapped[datetime.datetime] = mapped_column(UTCDateTime)
+    expires: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
 
     user: Mapped["User"] = relationship()
 
@@ -108,7 +108,7 @@ class EmailLogin(db.Model):
     verify_key: Mapped[str]
     visual_code: Mapped[str] # A code the user can visually check matches the one in the email
 
-    expiry: Mapped[datetime.datetime] = mapped_column(UTCDateTime)
+    expiry: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
     verified: Mapped[bool]
 
     user: Mapped[Optional["User"]] = relationship()
