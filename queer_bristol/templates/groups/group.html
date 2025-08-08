@@ -20,8 +20,8 @@
     <ul class="list-box">
     {% for announcement in announcements %}
         <li>
-            <h3>{{ announcement.title }}</h3>
-            <p>Posted {{ announcement.posted.strftime(''%-d %B %Y %H:%M %Z'') }}</p>
+            <h3><a href="{{ url_for('announcements.announcement', announcement_id=announcement.id) }}">{{ announcement.title }}</a></h3>
+            <p>Posted: {{ announcement.format_posted() }}</p>
             <p>{{ announcement.body }}</p>
         </li>
     {% endfor %}
@@ -38,6 +38,7 @@
     <h2>Admin</h2>
     <p><a href="{{ url_for('.edit', group_id=group.id) }}">Edit group</a></p>
     <p><a href="{{ url_for('events.new', group_id=group.id) }}">New event</a></p>
+    <p><a href="{{ url_for('announcements.new', group_id=group.id) }}">New announcement</a></p>
     {% endif %}
 </div>
 {% endblock %}

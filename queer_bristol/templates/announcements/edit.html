@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% import 'wtforms.html' as wtf %}
+
+{% block title %}New/Edit announcement{% endblock %}
+
+{% block contents %}
+<div class="container">
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        {{ wtf.input(form.title, form) }}
+        {{ wtf.input(form.body, form) }}
+        {{ wtf.input(form.hide_after_date, form) }}
+        {{ wtf.input(form.group, form) }}
+        <button type="submit" class="btn btn-primary">Submit</button><a href="{{ cancel_url }}">Cancel</a>
+    </form>
+</div>
+{% endblock %}

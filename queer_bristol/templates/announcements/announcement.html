@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Announcement - {{ announcement.title }}{% endblock %}
+
+{% block contents %}
+<div class="container">
+    <h1>{{ announcement.title }}</h1>
+    <p>Posted: {{ announcement.format_posted() }}</p>
+    <p>Group: <a href="{{ url_for('groups.group', group_id=announcement.group.id) }}">{{ announcement.group.name }}</a></p>
+    <p>{{ announcement.body }}</p>
+    {% if g.user and g.user.can_admin_group(announcement.group) %}
+    <h2>Admin</h2>
+    <p><a href="{{ url_for('.delete', announcement_id=announcement.id) }}">Delete announcement</a></p>
+    {% endif %}
+</div>
+{% endblock %}

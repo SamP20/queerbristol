@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% import 'wtforms.html' as wtf %}
+
+{% block title %}Delete announcement - {{ announcement.title }}{% endblock %}
+
+{% block contents %}
+<div class="container">
+    <h1>Delete announcement - {{ announcement.title }}</h1>
+    <p>Are you sure you want to delete this announcement?</p>
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <button type="submit" class="btn btn-primary">Delete</button><a href="{{ url_for('.announcement', announcement_id=announcement.id) }}">Cancel</a>
+    </form>
+</div>
+{% endblock %}

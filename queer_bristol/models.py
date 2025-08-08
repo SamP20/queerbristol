@@ -1,7 +1,7 @@
 
 import datetime
 from typing import Optional
-from sqlalchemy import Column, Computed, DateTime, ForeignKey, Index, String, Table, literal, literal_column
+from sqlalchemy import Column, Computed, Date, DateTime, ForeignKey, Index, String, Table, literal, literal_column
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -81,8 +81,21 @@ class Announcement(PkModel):
     body: Mapped[str]
     posted: Mapped[datetime.datetime] = mapped_column(LocalDateTime)
     group_id: Mapped[int] = mapped_column(ForeignKey("group.id", onupdate="CASCADE", ondelete="CASCADE"))
+    hide_after: Mapped[Optional[datetime.date]] = mapped_column(Date)
 
     group: Mapped[Optional["Group"]] = relationship()
+
+    def format_posted(self):
+        now = datetime.datetime.now(tz=datetime.timezone.utc)
+
+        time_fmt = "%H:%M"
+        if self.posted.year != now.year:
+            posted_date = self.posted.strftime("%a %-d %b %Y")
+        else:
+            posted_date = self.posted.strftime("%a %-d %b")
+        posted_time = self.posted.strftime(time_fmt)
+
+        return f"{posted_date} {posted_time}"
 
     __table_args__ = (
         Index(
