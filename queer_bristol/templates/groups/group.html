@@ -21,7 +21,7 @@
     {% for announcement in announcements %}
         <li>
             <h3>{{ announcement.title }}</h3>
-            <p>Posted {{ announcement.posted | datetime_to_human }}</p>
+            <p>Posted {{ announcement.posted.strftime(''%-d %B %Y %H:%M %Z'') }}</p>
             <p>{{ announcement.body }}</p>
         </li>
     {% endfor %}

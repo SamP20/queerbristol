@@ -6,18 +6,16 @@
 <div class="container">
     <ul class="list-box">
         {% for event in events %}
-        {% set start = event.start|localtime %}
         <li>
             <h2><a href="{{ url_for('events.event', event_id=event.id)}}">{{ event.title }}</a></h2>
             {% if event.end %}
-            {% set end = event.end|localtime %}
-            {% if end.date() == start.date() %}
-            <p>{{ start.strftime('%a %-d %b') }} {{ start.strftime('%H:%M') }} - {{ end.strftime('%H:%M') }}</p>
+            {% if event.end.date() == event.start.date() %}
+            <p>{{ event.start.strftime('%a %-d %b') }} {{ event.start.strftime('%H:%M') }} - {{ event.end.strftime('%H:%M') }}</p>
             {% else %}
-            <p>{{ start.strftime('%a %-d %b %H:%M') }} - {{ end.strftime('%a %-d %b %H:%M') }}</p>
+            <p>{{ event.start.strftime('%a %-d %b %H:%M') }} - {{ event.end.strftime('%a %-d %b %H:%M') }}</p>
             {% endif %}
             {% else %}
-            <p>{{ start.strftime('%a %-d %b %H:%M') }}</p>
+            <p>{{ event.start.strftime('%a %-d %b %H:%M') }}</p>
             {% endif %}
             
             <p>Location: {{ event.venue }}</p>

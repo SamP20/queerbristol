@@ -5,11 +5,12 @@ from datetime import datetime, timedelta, timezone
 from flask import Blueprint, abort, flash, g, redirect, render_template, request, url_for
 import sqlalchemy as sa
 
+from queer_bristol.database import local_timezone
+
 from .forms import EventForm
 from queer_bristol.extensions import db
 from queer_bristol.forms import DeleteConfirmForm
 from queer_bristol.login import login_required
-from queer_bristol.time_helpers import current_timezone
 from queer_bristol.models import Event, Group
 
 bp = Blueprint("events", __name__, url_prefix="/events")
@@ -62,7 +63,7 @@ def new():
         start_datetime = datetime.combine(
             form.start_date.data,
             form.start_time.data,
-            current_timezone()
+            local_timezone()
         )
 
         end_datetime = None
@@ -71,7 +72,7 @@ def new():
             end_datetime = datetime.combine(
                 end_date,
                 form.end_time.data,
-                current_timezone()
+                local_timezone()
             )
         event = Event(
             title=form.title.data,
