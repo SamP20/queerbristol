@@ -8,15 +8,7 @@
         {% for event in events %}
         <li>
             <h2><a href="{{ url_for('events.event', event_id=event.id)}}">{{ event.title }}</a></h2>
-            {% if event.end %}
-            {% if event.end.date() == event.start.date() %}
-            <p>{{ event.start.strftime('%a %-d %b') }} {{ event.start.strftime('%H:%M') }} - {{ event.end.strftime('%H:%M') }}</p>
-            {% else %}
-            <p>{{ event.start.strftime('%a %-d %b %H:%M') }} - {{ event.end.strftime('%a %-d %b %H:%M') }}</p>
-            {% endif %}
-            {% else %}
-            <p>{{ event.start.strftime('%a %-d %b %H:%M') }}</p>
-            {% endif %}
+            <p>{{ event.format_start_end() }}</p>
             
             <p>Location: {{ event.venue }}</p>
             <p>{{ event.description | truncate(150,true) }}</p>

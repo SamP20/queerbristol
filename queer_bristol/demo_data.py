@@ -86,6 +86,17 @@ def make_demo_data(name, email):
 
         start += timedelta(days=7)
 
+    start = now.replace(hour=12, minute=0) + timedelta(days=1)
+    multi_day_event = Event(
+        title="Camping trip",
+        description="Camping over several days",
+        start=start,
+        end=start + timedelta(days=3),
+        venue="In a forest",
+        group=hiking
+    )
+    db.session.add(multi_day_event)
+
     start = now + timedelta(days=4)
     for i in range(10):
         start_1030am = start.replace(hour=10, minute=30)

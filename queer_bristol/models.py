@@ -49,6 +49,32 @@ class Event(PkModel):
 
     group: Mapped[Optional["Group"]] = relationship()
 
+    def format_start_end(self):
+        now = datetime.datetime.now(tz=datetime.timezone.utc)
+
+        time_fmt = "%H:%M"
+        if self.start.year != now.year:
+            start_date = self.start.strftime("%a %-d %b %Y")
+        else:
+            start_date = self.start.strftime("%a %-d %b")
+        start_time = self.start.strftime(time_fmt)
+
+        if self.end is None:
+            return f"{start_date} {start_time}"
+        else:
+            if self.end.year != now.year:
+                end_date = self.end.strftime("%a %-d %b %Y")
+            else:
+                end_date = self.end.strftime("%a %-d %b")
+
+            end_time = self.end.strftime(time_fmt)
+            
+            if self.end.date() == self.start.date():
+                return f"{start_date} {start_time} - {end_time}"
+            else:
+                return f"{start_date} {start_time} - {end_date} {end_time}"
+
+
 
 class Announcement(PkModel):
     title: Mapped[str]
