@@ -11,6 +11,9 @@
             <p>{{ event.format_start_end() }}</p>
             
             <p>Location: {{ event.venue }}</p>
+            {% if event.group %}
+            <p>Run by: <a href="{{ url_for('groups.group', group_id=event.group.id) }}">{{ event.group.name }}</a></p>
+            {% endif %}
             <p>{{ event.description | truncate(150,true) }}</p>
         </li>
         {% endfor %}
