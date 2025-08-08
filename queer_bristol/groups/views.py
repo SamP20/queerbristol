@@ -5,6 +5,8 @@ from datetime import datetime, timedelta, timezone
 from flask import Blueprint, abort, g, redirect, render_template, request, url_for
 import sqlalchemy as sa
 
+from queer_bristol.login import login_required
+
 from .forms import GroupForm
 from queer_bristol.extensions import db
 from queer_bristol.main.views import filter_passthrough_request_args
@@ -37,9 +39,14 @@ def index():
 @bp.route("/<int:group_id>")
 def group(group_id):
     group = db.get_or_404(Group, group_id)
+    now = datetime.now(tz=timezone.utc)
 
-    query = sa.select(Announcement).filter(Announcement.group==group).order_by(Announcement.posted.desc())
-    announcements = db.paginate(query)
+    query = sa.select(Announcement).filter(Announcement.group==group)
+    query = query.filter(sa.or_(
+        Announcement.hide_after.is_(None),
+        Announcement.hide_after < now.date()
+    ))
+    announcements = db.paginate(query.order_by(Announcement.posted.desc()))
 
     now = datetime.now(timezone.utc)
     few_hours_ago = now - timedelta(hours=3)
@@ -60,11 +67,35 @@ def group(group_id):
         paginate_passthrough=paginate_passthrough
     )
 
+@bp.route("/new", methods=["GET", "POST"])
+@login_required
+def new():
+    if not g.user.is_helper:
+        abort(403)
+
+    form = GroupForm()
+
+    if form.validate_on_submit():
+        group = Group(
+            name = form.name.data,
+            description = form.description.data,
+            tags = form.tags.data
+        )
+
+        db.session.add(group)
+        db.session.commit()
+        return redirect(url_for('.group', group_id=group.id))
+    
+    cancel_url = url_for('.index')
+
+    return render_template("groups/edit.html", form=form, cancel_url=cancel_url)
+
 @bp.route("/<int:group_id>/edit", methods=["GET", "POST"])
+@login_required
 def edit(group_id):
     group = db.get_or_404(Group, group_id)
 
-    if not ('user' in g and g.user.can_admin_group(group)):
+    if not g.user.can_admin_group(group):
         abort(403)
 
     form = GroupForm(obj=group)
@@ -73,8 +104,9 @@ def edit(group_id):
         group.name = form.name.data
         group.description = form.description.data
         group.tags = form.tags.data
-        group.slug = form.slug.data
         db.session.commit()
         return redirect(url_for('.group', group_id=group.id))
+    
+    cancel_url = url_for('.group', group_id=group.id)
 
-    return render_template("groups/edit.html", form=form, group=group)
+    return render_template("groups/edit.html", form=form, cancel_url=cancel_url)

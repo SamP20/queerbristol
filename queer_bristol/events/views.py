@@ -47,7 +47,7 @@ def event(event_id):
 @login_required
 def new():
     data = {}
-    group_id = request.args.get('group', None)
+    group_id = request.args.get('group_id', None)
     if group_id is not None:
         data["group"] = group_id
 
@@ -84,7 +84,7 @@ def new():
         )
         db.session.add(event)
         db.session.commit()
-        return redirect(url_for('.index', event_id=event.id))
+        return redirect(url_for('.event', event_id=event.id))
 
     return render_template("events/new.html", form=form)
 
@@ -101,6 +101,6 @@ def delete(event_id):
         db.session.delete(event)
         db.session.commit()
         flash("Event deleted")
-        return redirect(url_for('main.group', group_slug=event.group.full_slug))
+        return redirect(url_for('groups.group', group_id=event.group.id))
     
     return render_template("events/delete.html", form=form, event=event)
