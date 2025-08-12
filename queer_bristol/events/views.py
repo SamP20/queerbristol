@@ -77,6 +77,7 @@ def new():
         event = Event(
             title=form.title.data,
             description=form.description.data,
+            accessibility=form.accessibility.data,
             start=start_datetime,
             end=end_datetime,
             venue=form.venue.data,

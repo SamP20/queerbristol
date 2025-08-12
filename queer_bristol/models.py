@@ -42,6 +42,7 @@ class Group(PkModel):
 class Event(PkModel):
     title: Mapped[str]
     description: Mapped[str]
+    accessibility: Mapped[str] = mapped_column(String, server_default="")
     start: Mapped[datetime.datetime] = mapped_column(LocalDateTime)
     end: Mapped[Optional[datetime.datetime]] = mapped_column(LocalDateTime)
     venue: Mapped[str]

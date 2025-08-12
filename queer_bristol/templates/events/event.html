@@ -6,9 +6,13 @@
 <div class="container">
     <h1>{{ event.title }}</h1>
     <p>Location: {{ event.venue }}</p>
-    <p>{{ event.description }}</p>
     {% if event.group %}
     <p>Run by: <a href="{{ url_for('groups.group', group_id=event.group.id) }}">{{ event.group.name }}</a></p>
+    {% endif %}
+    <p>{{ event.description }}</p>
+    {% if event.accessibility %}
+    <h2>Accessibility</h2>
+    <p>{{ event.accessibility }}</p>
     {% endif %}
     {% if g.user and g.user.can_admin_group(event.group) %}
     <h2>Admin</h2>

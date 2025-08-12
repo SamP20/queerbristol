@@ -5,6 +5,7 @@ from wtforms.validators import DataRequired, InputRequired, Optional
 class EventForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     description = TextAreaField('Description')
+    accessibility = TextAreaField('Accessibility')
     start_date = DateField('Start date', validators=[InputRequired()])
     start_time = TimeField('Start time', validators=[InputRequired()])
     end_date = DateField('End date', validators=[Optional()])
