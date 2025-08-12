@@ -43,37 +43,41 @@ def event(event_id):
     event = db.get_or_404(Event, event_id)
     return render_template("events/event.html", event=event)
 
+
+def combine_event_date_time(form: EventForm) -> tuple[datetime, datetime|None]:
+    start_datetime = datetime.combine(
+        form.start_date.data,
+        form.start_time.data,
+        local_timezone()
+    )
+
+    end_datetime = None
+    if form.end_time.data:
+        end_date = form.end_date.data or form.start_date.data
+        end_datetime = datetime.combine(
+            end_date,
+            form.end_time.data,
+            local_timezone()
+        )
+    
+    return (start_datetime, end_datetime)
+
+
 @bp.route("/new", methods=["GET", "POST"])
 @login_required
 def new():
-    data = {}
     group_id = request.args.get('group_id', None)
-    if group_id is not None:
-        data["group"] = group_id
 
-    form = EventForm(data=data)
-    if g.user.is_helper:
-        available_groups = db.session.execute(sa.Select(Group)).scalars()
-    else:
-        available_groups = g.user.groups
-    group_list = [(g.id, g.name) for g in available_groups]
-    form.group.choices = group_list
+    group = db.get_or_404(Group, group_id)
+
+    if not g.user.can_admin_group(group):
+        abort(403)
+
+    form = EventForm()
 
     if form.validate_on_submit():
-        start_datetime = datetime.combine(
-            form.start_date.data,
-            form.start_time.data,
-            local_timezone()
-        )
+        start_datetime, end_datetime = combine_event_date_time(form)
 
-        end_datetime = None
-        if form.end_time.data:
-            end_date = form.end_date.data or form.start_date.data
-            end_datetime = datetime.combine(
-                end_date,
-                form.end_time.data,
-                local_timezone()
-            )
         event = Event(
             title=form.title.data,
             description=form.description.data,
@@ -81,13 +85,47 @@ def new():
             start=start_datetime,
             end=end_datetime,
             venue=form.venue.data,
-            group_id=form.group.data
+            group=group
         )
         db.session.add(event)
         db.session.commit()
         return redirect(url_for('.event', event_id=event.id))
+    
+    cancel_url = url_for('groups.group', group_id=group.id)
 
-    return render_template("events/new.html", form=form)
+    return render_template("events/edit.html", form=form, cancel_url=cancel_url)
+
+@bp.route("/<int:event_id>/edit", methods=["GET", "POST"])
+def edit(event_id):
+    event = db.get_or_404(Event, event_id)
+
+    if not g.user.can_admin_group(event.group):
+        abort(403)
+
+    form = EventForm(
+        obj=event,
+        start_date = event.start.date(),
+        start_time = event.start.time(),
+        end_date = event.end.date() if event.end else None,
+        end_time = event.end.time() if event.end else None,
+    )
+
+    if form.validate_on_submit():
+        start_datetime, end_datetime = combine_event_date_time(form)
+
+        event.start = start_datetime
+        event.end = end_datetime
+        event.title = form.title.data
+        event.description = form.description.data
+        event.accessibility = form.accessibility.data
+        event.venue = form.venue.data
+
+        db.session.commit()
+        return redirect(url_for('.event', event_id=event.id))
+    
+    cancel_url = url_for('.event', event_id=event.id)
+    
+    return render_template("events/edit.html", form=form, cancel_url=cancel_url)
 
 @bp.route("/<int:event_id>/delete", methods=["GET", "POST"])
 @login_required

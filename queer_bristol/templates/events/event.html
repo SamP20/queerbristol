@@ -5,6 +5,7 @@
 {% block contents %}
 <div class="container">
     <h1>{{ event.title }}</h1>
+    <p>{{ event.format_start_end() }}</p>
     <p>Location: {{ event.venue }}</p>
     {% if event.group %}
     <p>Run by: <a href="{{ url_for('groups.group', group_id=event.group.id) }}">{{ event.group.name }}</a></p>
@@ -16,6 +17,7 @@
     {% endif %}
     {% if g.user and g.user.can_admin_group(event.group) %}
     <h2>Admin</h2>
+    <p><a href="{{ url_for('.edit', event_id=event.id) }}">Edit event</a></p>
     <p><a href="{{ url_for('.delete', event_id=event.id) }}">Delete event</a></p>
     {% endif %}
 </div>

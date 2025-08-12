@@ -11,4 +11,3 @@ class EventForm(FlaskForm):
     end_date = DateField('End date', validators=[Optional()])
     end_time = TimeField('End time', validators=[Optional()])
     venue = StringField('Venue', validators=[DataRequired()])
-    group = SelectField('Group', coerce=int)
