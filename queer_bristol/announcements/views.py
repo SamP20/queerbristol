@@ -24,40 +24,58 @@ def announcement(announcement_id):
     announcement = db.get_or_404(Announcement, announcement_id)
     return render_template("announcements/announcement.html", announcement=announcement)
 
+
 @bp.route("/new", methods=["GET", "POST"])
 @login_required
 def new():
-    data = {}
     group_id = request.args.get('group_id', None)
-    if group_id is not None:
-        data["group"] = group_id
 
-    form = AnnouncementForm(data=data)
-    if g.user.is_helper:
-        available_groups = db.session.execute(sa.Select(Group)).scalars()
-    else:
-        available_groups = g.user.groups
-    group_list = [(g.id, g.name) for g in available_groups]
-    form.group.choices = group_list
+    group = db.get_or_404(Group, group_id)
+
+    if not g.user.can_admin_group(group):
+        abort(403)
+
+    form = AnnouncementForm()
 
     if form.validate_on_submit():
         announcement = Announcement(
             title=form.title.data,
             body=form.body.data,
             posted=datetime.now(tz=timezone.utc),
-            group_id=form.group.data,
-            hide_after=form.hide_after_date.data
+            group=group,
+            hide_after=form.hide_after.data
         )
         db.session.add(announcement)
         db.session.commit()
         return redirect(url_for('.announcement', announcement_id=announcement.id))
     
-    if group_id is not None:
-        cancel_url = url_for('groups.group', group_id=group_id)
-    else:
-        cancel_url = url_for('groups.index')
+    cancel_url = url_for('groups.group', group_id=group.id)
 
     return render_template("announcements/edit.html", form=form, cancel_url=cancel_url)
+
+
+@bp.route("/<int:announcement_id>/edit", methods=["GET", "POST"])
+@login_required
+def edit(announcement_id):
+    announcement = db.get_or_404(Announcement, announcement_id)
+
+    if not g.user.can_admin_group(announcement.group):
+        abort(403)
+
+    form = AnnouncementForm(obj=announcement)
+
+    if form.validate_on_submit():
+        announcement.title = form.title.data
+        announcement.body = form.body.data
+        announcement.hide_after = form.hide_after.data
+
+        db.session.commit()
+        return redirect(url_for('.announcement', announcement_id=announcement.id))
+    
+    cancel_url = url_for('.announcement', announcement_id=announcement.id)
+
+    return render_template("announcements/edit.html", form=form, cancel_url=cancel_url)
+
 
 @bp.route("/<int:announcement_id>/delete", methods=["GET", "POST"])
 @login_required
