@@ -2,9 +2,10 @@
 
 
 from datetime import datetime, timedelta, timezone
-from flask import Blueprint, abort, g, redirect, render_template, request, url_for
+from flask import Blueprint, abort, flash, g, redirect, render_template, request, url_for
 import sqlalchemy as sa
 
+from queer_bristol.forms import DeleteConfirmForm
 from queer_bristol.login import login_required
 
 from .forms import GroupForm
@@ -39,6 +40,7 @@ def index():
 @bp.route("/<int:group_id>")
 def group(group_id):
     group = db.get_or_404(Group, group_id)
+
     now = datetime.now(tz=timezone.utc)
 
     query = sa.select(Announcement).filter(Announcement.group==group)
@@ -90,6 +92,7 @@ def new():
 
     return render_template("groups/edit.html", form=form, cancel_url=cancel_url)
 
+
 @bp.route("/<int:group_id>/edit", methods=["GET", "POST"])
 @login_required
 def edit(group_id):
@@ -110,3 +113,23 @@ def edit(group_id):
     cancel_url = url_for('.group', group_id=group.id)
 
     return render_template("groups/edit.html", form=form, cancel_url=cancel_url)
+
+
+@bp.route("/<int:group_id>/delete", methods=["GET", "POST"])
+@login_required
+def delete(group_id):
+    group = db.get_or_404(Group, group_id)
+
+    if not g.user.admin:
+        abort(403)
+
+    form = DeleteConfirmForm()
+    if form.validate_on_submit():
+        # This delete will cascase to all the Group's events and announcements too
+        db.session.delete(group)
+        db.session.commit()
+
+        flash("Group deleted")
+        return redirect(url_for('groups.index'))
+    
+    return render_template("groups/delete.html", form=form, group=group)
