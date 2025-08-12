@@ -282,3 +282,17 @@ textarea {
     padding: 0.5rem;
     background-color: var(--background-accent-3);
 }
+
+.flashes {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1.0rem;
+    padding: 0;
+}
+
+.flashes > li {
+    list-style: none;
+    padding: 0.5rem;
+    /* Will need styling to make it distinct from input fields */
+    border: var(--border-width) solid var(--border-color);
+}
