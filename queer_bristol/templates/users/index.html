@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Groups{% endblock %}
+
+{% block contents %}
+<div class="container">
+    <ul class="list-box">
+        {% for user in users %}
+        <li>
+            <h2><a href="{{ url_for('.edit', user_id=user.id)}}">{{ user.name }}</a></h2>
+            <p>Is admin: {{ user.admin }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+    <div class="pagination">
+        {% if users.has_prev %}
+        <a href="{{ prev_url }}">&#171; Previous</a>
+        {% endif %}
+        {% if users.has_next %}
+        <a href="{{ next_url }}">Next &#187;</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

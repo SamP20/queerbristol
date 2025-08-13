@@ -43,12 +43,13 @@ def register_extensions(app: Flask):
 
 
 def register_blueprints(app: Flask):
-    from queer_bristol import account, announcements, events, groups, main
+    from queer_bristol import account, announcements, events, groups, main, users
     app.register_blueprint(account.views.bp)
     app.register_blueprint(announcements.views.bp)
     app.register_blueprint(events.views.bp)
     app.register_blueprint(groups.views.bp)
     app.register_blueprint(main.views.bp)
+    app.register_blueprint(users.views.bp)
     
     # This provides no pages, but some CLI commands
     from queer_bristol import demo_data
