@@ -48,6 +48,7 @@ def group(group_id):
         Announcement.hide_after.is_(None),
         Announcement.hide_after < now.date()
     ))
+    query = query.filter(Announcement.posted<now)
     announcements = db.paginate(query.order_by(Announcement.posted.desc()))
 
     now = datetime.now(timezone.utc)

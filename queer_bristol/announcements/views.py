@@ -38,10 +38,21 @@ def new():
     form = AnnouncementForm()
 
     if form.validate_on_submit():
+        posted = datetime.now(tz=local_timezone()).replace(second=0, microsecond=0)
+
+        if form.schedule_time.data:
+            schedule_date = form.schedule_date.data or posted.date()
+            schedule_time = form.schedule_time.data
+            posted = datetime.combine(
+                schedule_date,
+                schedule_time,
+                local_timezone()
+            )
+
         announcement = Announcement(
             title=form.title.data,
             body=form.body.data,
-            posted=datetime.now(tz=timezone.utc),
+            posted=posted,
             group=group,
             hide_after=form.hide_after.data
         )
@@ -62,12 +73,29 @@ def edit(announcement_id):
     if not g.user.can_admin_group(announcement.group):
         abort(403)
 
-    form = AnnouncementForm(obj=announcement)
+    form = AnnouncementForm(
+        obj=announcement,
+        schedule_date=announcement.posted.date(),
+        schedule_time=announcement.posted.time()
+    )
 
     if form.validate_on_submit():
+        posted = datetime.now(tz=local_timezone()).replace(second=0, microsecond=0)
+
         announcement.title = form.title.data
         announcement.body = form.body.data
         announcement.hide_after = form.hide_after.data
+
+        if form.schedule_time.data:
+            schedule_date = form.schedule_date.data or posted.date()
+            schedule_time = form.schedule_time.data
+            announcement.posted = datetime.combine(
+                schedule_date,
+                schedule_time,
+                local_timezone()
+            )
+
+
 
         db.session.commit()
         return redirect(url_for('.announcement', announcement_id=announcement.id))
