@@ -12,7 +12,7 @@ bp = Blueprint('demo', __name__, cli_group=None)
 @bp.cli.command("make-demo-data")
 @click.argument('name')
 @click.argument('email')
-def make_demo_data(name, email):
+def make_demo_data(name: str, email: str):
     db.drop_all()
     db.create_all()
 
