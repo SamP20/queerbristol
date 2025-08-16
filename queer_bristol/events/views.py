@@ -59,7 +59,7 @@ def combine_event_date_time(form: EventForm) -> tuple[datetime, datetime|None]:
             form.end_time.data,
             local_timezone()
         )
-    
+
     return (start_datetime, end_datetime)
 
 
@@ -90,7 +90,7 @@ def new():
         db.session.add(event)
         db.session.commit()
         return redirect(url_for('.event', event_id=event.id))
-    
+
     cancel_url = url_for('groups.group', group_id=group.id)
 
     return render_template("events/edit.html", form=form, cancel_url=cancel_url)
@@ -122,9 +122,9 @@ def edit(event_id):
 
         db.session.commit()
         return redirect(url_for('.event', event_id=event.id))
-    
+
     cancel_url = url_for('.event', event_id=event.id)
-    
+
     return render_template("events/edit.html", form=form, cancel_url=cancel_url)
 
 @bp.route("/<int:event_id>/delete", methods=["GET", "POST"])
@@ -141,5 +141,5 @@ def delete(event_id):
         db.session.commit()
         flash("Event deleted")
         return redirect(url_for('groups.group', group_id=event.group.id))
-    
+
     return render_template("events/delete.html", form=form, event=event)
