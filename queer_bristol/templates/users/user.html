@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}User - {{ user.namr }}{% endblock %}
+
+{% block contents %}
+<div class="container">
+    <h1>User - {{ user.name }}</h1>
+    <p>Email: {{ user.email }}</p>
+    <h2>Admin</h2>
+    <p><a href="{{ url_for('.edit', user_id=user.id) }}">Edit user</a></p>
+    <p><a href="{{ url_for('.delete', user_id=user.id) }}">Delete user</a></p>
+
+</div>
+{% endblock %}

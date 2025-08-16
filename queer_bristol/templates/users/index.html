@@ -7,7 +7,7 @@
     <ul class="list-box">
         {% for user in users %}
         <li>
-            <h2><a href="{{ url_for('.edit', user_id=user.id)}}">{{ user.name }}</a></h2>
+            <h2><a href="{{ url_for('.user', user_id=user.id)}}">{{ user.name }}</a></h2>
             <p>Is admin: {{ user.admin }}</p>
         </li>
         {% endfor %}
@@ -20,5 +20,7 @@
         <a href="{{ next_url }}">Next &#187;</a>
         {% endif %}
     </div>
+    <h2>Admin</h2>
+    <p><a href="{{ url_for('.new') }}">Create user</a></p>
 </div>
 {% endblock %}
