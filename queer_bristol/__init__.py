@@ -11,7 +11,7 @@ def create_app(test_config=None):
 
     app.config.from_mapping(
         SECRET_KEY="dev",
-        SQLALCHEMY_DATABASE_URI="postgresql+psycopg2://postgres:postgres@localhost:5432/queer_bristol",
+        SQLALCHEMY_DATABASE_URI="postgresql+psycopg2://postgres:postgres@localhost:5432/queerbristol",
     )
 
     if test_config is None:
@@ -50,7 +50,7 @@ def register_blueprints(app: Flask):
     app.register_blueprint(groups.views.bp)
     app.register_blueprint(main.views.bp)
     app.register_blueprint(users.views.bp)
-    
+
     # This provides no pages, but some CLI commands
     from queer_bristol import demo_data
     app.register_blueprint(demo_data.bp)
