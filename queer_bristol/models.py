@@ -147,3 +147,8 @@ class EmailLogin(db.Model):
     verified: Mapped[bool]
 
     user: Mapped[Optional["User"]] = relationship()
+
+class Image(db.Model):
+    id: Mapped[str] = mapped_column(primary_key=True) # Will be the saved image hash
+    name: Mapped[str]
+    alt_text: Mapped[str] = mapped_column(server_default="")
