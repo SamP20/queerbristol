@@ -3,7 +3,9 @@
 
 from datetime import datetime, timedelta, timezone
 from flask import Blueprint, abort, flash, g, redirect, render_template, request, url_for
+from flask_wtf import FlaskForm
 import sqlalchemy as sa
+from wtforms import DateField, ValidationError
 
 from queer_bristol.database import local_timezone
 
@@ -75,7 +77,13 @@ def new():
 
     form = EventForm()
 
-    if form.validate_on_submit():
+    def validate_not_in_past(form: FlaskForm, field: DateField):
+        now = datetime.now(tz=local_timezone())
+        if field.data and field.data < now.date():
+            raise ValidationError("Events cannot be created in the past.")
+
+
+    if form.validate_on_submit({"start_date": validate_not_in_past}):
         start_datetime, end_datetime = combine_event_date_time(form)
 
         event = Event(
