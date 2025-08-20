@@ -4,6 +4,9 @@
 
 {% block contents %}
 <div class="container">
+    <form action="" method="get" >
+        <input type="text" name="search" placeholder="Search"><button type="submit">Go!</button>
+    </form>
     <ul class="list-box">
         {% for group in groups %}
         <li>
