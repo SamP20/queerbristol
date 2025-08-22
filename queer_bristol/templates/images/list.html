@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block header %}
+{% if view_mode != "iframe" %}{{ super() }}{% endif %}
+{% endblock %}
+
+{% block footer %}
+{% if view_mode != "iframe" %}{{ super() }}{% endif %}
+{% endblock %}
+
+{% block title %}Images{% endblock %}
+
+{% block contents %}
+<div class="container">
+    <p><a href="{{ url_for('.upload', group_id=group.id) }}">Upload new image</a></p>
+    <ul class="gallery">
+        {% for image in images %}
+        <li>
+            <h2>{{ image.name }}</h2>
+            <img class="gallery-image" src="{{ url_for('.image', image_id=image.id) }}" alt="{{ image.alt_text }}", id="image-{{ image.id }}">
+            {% if view_mode in ["iframe", "opener"] %}
+            <p><a href="#" onclick="image_insert('{{ image.id }}' )">Insert image</a></p>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    <div class="pagination">
+        {% if prev_url %}
+        <a href="{{ prev_url }}">&#171; Previous</a>
+        {% endif %}
+        {% if next_url %}
+        <a href="{{ next_url }}">Next &#187;</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    function image_insert(image_id) {
+        preview_image = document.getElementById("image-"+image_id);
+        {% if view_mode == "opener" %}
+        window.opener.select_image(image_id, preview_image);
+        {% elif view_mode == "iframe" %}
+        window.parent.select_image(image_id, preview_image);
+        {% endif %}
+        window.close();
+        return false;
+    }
+</script>
+{% endblock %}

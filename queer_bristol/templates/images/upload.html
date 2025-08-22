@@ -6,7 +6,7 @@
 
 {% block contents %}
 <div class="container">
-    <form method="POST" action="">
+    <form method="POST" action="" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
         {{ wtf.input(form.image, form) }}
         {{ wtf.input(form.name, form) }}

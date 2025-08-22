@@ -16,9 +16,9 @@
 
         <!-- Custom styles for this template -->
         <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
-
     </head>
     <body>
+        {% block header %}
         <header class="header">
             <nav class="container navbar">
                 <a href="{{ url_for('main.index') }}" class="nav-title">
@@ -35,7 +35,9 @@
                 </ul>
             </nav>
         </header>
+        {% endblock %}
 
+        {% block main %}
         <main class="main">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
@@ -51,11 +53,17 @@
         {% block contents %}
         {% endblock %}
         </main>
+        {% endblock %}
 
+        {% block footer %}
         <footer class="footer">
             <div class="container">
                 <p>© Copyright 2025 Queer Bristol.</p>
             </div>
         </footer>
+        {% endblock %}
+
+        {% block script %}
+        {% endblock %}
     </body>
 </html>

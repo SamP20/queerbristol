@@ -258,20 +258,6 @@ textarea {
     background-color: var( --background-accent-3);
 }
 
-.tag-list {
-    display: flex;
-    flex-flow: row wrap;
-    column-gap: 1.0rem;
-    padding: 0;
-}
-
-.tag-list > li {
-    list-style: none;
-    padding: 0.5rem;
-    background-color: #f289ee;
-    border-radius: 0.5rem;
-}
-
 .required:after {
     content: '*';
     color: red;
@@ -295,4 +281,27 @@ textarea {
     padding: 0.5rem;
     /* Will need styling to make it distinct from input fields */
     border: var(--border-width) solid var(--border-color);
+}
+
+.gallery {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 1.0rem;
+    column-gap: 1.0rem;
+    padding: 0;
+}
+
+.gallery > li {
+    list-style: none;
+    padding: 0.5rem;
+    background-color: var( --background-accent-1);
+}
+
+.gallery-image {
+    width: 40rem;
+    height: 40rem;
+    display: block;
+    object-fit: contain;
+    background-color: var(--bg-secondary-color);
+    margin: var(--row-gap) auto;
 }

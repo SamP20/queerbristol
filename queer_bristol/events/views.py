@@ -101,7 +101,7 @@ def new():
 
     cancel_url = url_for('groups.group', group_id=group.id)
 
-    return render_template("events/edit.html", form=form, cancel_url=cancel_url)
+    return render_template("events/edit.html", form=form, cancel_url=cancel_url, group=group)
 
 @bp.route("/<int:event_id>/edit", methods=["GET", "POST"])
 def edit(event_id):
@@ -133,7 +133,7 @@ def edit(event_id):
 
     cancel_url = url_for('.event', event_id=event.id)
 
-    return render_template("events/edit.html", form=form, cancel_url=cancel_url)
+    return render_template("events/edit.html", form=form, cancel_url=cancel_url, group=event.group)
 
 @bp.route("/<int:event_id>/delete", methods=["GET", "POST"])
 @login_required

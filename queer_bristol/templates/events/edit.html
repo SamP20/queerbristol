@@ -16,7 +16,35 @@
         {{ wtf.input(form.end_date, form) }}
         {{ wtf.input(form.end_time, form) }}
         {{ wtf.input(form.venue, form) }}
+        <div class="form-field">
+        <label class="form-label" for="select_image">Select image</label>
+        <button id="select_image" class="btn btn-primary">Open selection window</button><button id="clear_image" class="btn btn-primary">Clear image</button>
+        <img id="preview_image" class="gallery-image" src="{{ url_for('static', filename='images/missing.png') }}" alt="No image selected">
+        </div>
         <button type="submit" class="btn btn-primary">Submit</button><a href="{{ cancel_url }}">Cancel</a>
     </form>
 </div>
+{% endblock %}
+
+{% block script %}
+<script>
+document.getElementById("select_image").onclick = function(event) {
+    window.open("{{ url_for('images.by_group', group_id=group.id, view_mode='opener')}}");
+};
+
+document.getElementById("clear_image").onclick = function(event) {
+    document.getElementById("image").value = "";
+    preview_image = document.getElementById("preview_image");
+    preview_image.src = "{{ url_for('static', filename='images/missing.png') }}";
+    preview_image.alt = "No image selected";
+};
+
+function select_image(image_id, image_element) {
+    document.getElementById("image").value = image_id;
+    preview_image = document.getElementById("preview_image");
+    preview_image.src = image_element.src;
+    preview_image.alt = image_element.alt
+
+}
+</script>
 {% endblock %}

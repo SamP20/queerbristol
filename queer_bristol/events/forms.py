@@ -1,6 +1,6 @@
 from typing import Self
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, DateField, TimeField, SelectField, ValidationError
+from wtforms import HiddenField, StringField, TextAreaField, DateField, TimeField, SelectField, ValidationError
 from wtforms.validators import DataRequired, InputRequired, Optional
 
 class EventForm(FlaskForm):
@@ -12,6 +12,7 @@ class EventForm(FlaskForm):
     end_date = DateField('End date', validators=[Optional()])
     end_time = TimeField('End time', validators=[Optional()])
     venue = StringField('Venue', validators=[DataRequired()])
+    image = HiddenField('Image')
 
     def validate_end_date(form: Self, field: DateField):
         if field.data < form.start_date.data:

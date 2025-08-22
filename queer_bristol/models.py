@@ -1,11 +1,12 @@
 
 import datetime
 from typing import Optional
-from sqlalchemy import Column, Computed, Date, DateTime, ForeignKey, Index, String, Table, literal, literal_column
+from sqlalchemy import Column, Computed, Date, DateTime, ForeignKey, Index, String, Table, literal, literal_column, Uuid
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func, expression
+import uuid
 
 
 from queer_bristol.database import LocalDateTime, PkModel, UTCDateTime
@@ -149,6 +150,13 @@ class EmailLogin(db.Model):
     user: Mapped[Optional["User"]] = relationship()
 
 class Image(db.Model):
-    id: Mapped[str] = mapped_column(primary_key=True) # Will be the saved image hash
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True) # Will be the saved image UUID
+    extension: Mapped[str]
     name: Mapped[str]
     alt_text: Mapped[str] = mapped_column(server_default="")
+    group_id: Mapped[int] = mapped_column(ForeignKey("group.id", ondelete="CASCADE"))
+
+    def filename(self):
+        return f"{self.id.hex}.{self.extension}"
+
+    group: Mapped["Group"] = relationship()
